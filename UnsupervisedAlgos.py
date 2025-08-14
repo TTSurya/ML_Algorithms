@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
 
 # K-Means
 class KMeans:
@@ -25,7 +24,13 @@ class KMeans:
 # Hierarchical Agglomerative
 def agglomerative(X, n_clusters=2):
     clusters = [[i] for i in range(len(X))]
-    distances = squareform(pdist(X))
+    n = len(X)
+    distances = np.zeros((n,n))
+    for i in range(n):
+        for j in range(i+1,n):
+            distances[i,j] = np.linalg.norm(X[i]-X[j])
+            distances[j,i] = distances[i,j]
+
     while len(clusters) > n_clusters:
         min_dist, to_merge = float('inf'), (0,1)
         for i in range(len(clusters)):
@@ -35,7 +40,8 @@ def agglomerative(X, n_clusters=2):
         i,j = to_merge
         clusters[i].extend(clusters[j])
         clusters.pop(j)
-    labels = np.zeros(len(X))
+
+    labels = np.zeros(n)
     for idx, c in enumerate(clusters):
         for i in c: labels[i] = idx
     return labels
